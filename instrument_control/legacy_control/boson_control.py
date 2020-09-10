@@ -5,3 +5,8 @@ this script contains functions for basic IRCSP control
 @author: khart
 """
 
+from flirpy.camera.boson import Boson
+
+camera = Boson()
+image = camera.grab()
+camera.close()
