@@ -4,27 +4,23 @@ Created on Tue Dec 17 16:16:50 2019
 
 @author: khart
 """
-
+from BosonSDK.ClientFiles_Python import Client_API as pyClient
+from BosonSDKCopy.ClientFiles_Python import Client_API as pyClient2
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
 from PIL import Image
 import time
 import argparse
-
 from Cam1 import Camera1
 from Cam2 import Camera2
-
-from BosonSDK.ClientFiles_Python import Client_API as pyClient
-from BosonSDKCopy.ClientFiles_Python import Client_API as pyClient2
 
 def main(args):
    
     rootFileName = args.fp
     fileName = args.name
-        
-    
-    
+    avg = args.avg
+     
     cam1 = Camera1("COM5")
     cam2 = Camera2("COM6")
 
@@ -151,8 +147,19 @@ def main(args):
 
     """SET UP MASTER SLAVE"""
     
+    mode1 = cam1.get_syncMode()
+    mode2 = cam2.get_syncMode()
+    print(mode1)
+    print (mode2)
+    
     cam1.set_asMaster()
     cam2.set_asSlave()
+    
+    
+    mode1 = cam1.get_syncMode()
+    mode2 = cam2.get_syncMode()
+    print(mode1)
+    print (mode2)
 
 
     """IMAGE ACQUISITION FOR CALIBRATION
@@ -161,151 +168,161 @@ def main(args):
         -save .txt of raw and corrected FPA temps for each capture
     """
     
+    startAll = time.perf_counter()
+    loopsToRun =    avg
+    secondsToWait = 10
+    
+    
+    fpaTempCorr1 = np.zeros((loopsToRun,2))
+    fpaTempCorr2 = np.zeros((loopsToRun,2))
+    
+    
+    
+    print('\n\n---START TRIAL CAPTURES---\n')
+    for n in range(loopsToRun):
+        start = time.perf_counter()
+    
    
-    """Capture image (inferring AGC is off since gain state is fixed), dims now being read"""
-    try:
-        startIm = time.perf_counter()
-        pyClient.captureSingleFrame()
-        pyClient2.captureSingleFrame()
-            
-    except Exception as e:
-       print('Something went wrong during frame capture. Error code: {c}, Message, {m}'.format(c = type(e), m=str(e)))
-       cam1.close_port()
-       cam2.close_port()
-       sys.exit(1)
-            
-            
-            
-    """Record FPA Temp"""
-      
-    fpaTempCorr1 = pyClient.bosonlookupFPATempDegCx10()
-    fpaTempCorr2 = pyClient2.bosonlookupFPATempDegCx10()
-    print('\nFPA Temp: ' + str(fpaTempCorr1) + ' C,')
-    print('\nFPA Temp: ' + str(fpaTempCorr2) + ' C,')
-        
-        
-        
-
-    try:
-        memGetSizeRet = pyClient.memGetCaptureSize()
-            
-        # store capture size in bytes in new vars for later use
-        capSizeinBytes = memGetSizeRet[1]
-        pixRows = memGetSizeRet[2]
-        pixCols = memGetSizeRet[3]
     
-    except:
-        print('Something went wrong during memGetCaptureSize() call. Exiting...')
-        cam1.close_port()
-        cam2.close_port()
-        sys.exit(1)
+        """Capture image (inferring AGC is off since gain state is fixed), dims now being read"""
+        try:
+            startIm = time.perf_counter()
+            #cam1.take_image()
+            pyClient.captureSingleFrame()
+            pyClient2.captureSingleFrame()
+            #cam1.take_image()
+            #cam2.take_image()
+            #cam1.take_image()
+            print(str(startIm-start) + " seconds to execute both image commands")
+            print('Cam 1: Finished Acquiring Image ' + str(n+1))
+            print('Cam 2: Finished Acquiring Image ' + str(n+1))
+            
+        except Exception as e:
+            print('Something went wrong during frame capture. Error code: {c}, Message, {m}'.format(c = type(e), m=str(e)))
+            cam1.close_port()
+            cam2.close_port()
+            sys.exit(1)
+            
+            
+            
+        """Record FPA Temp"""
+        fpaTempCorr1[n] = pyClient.bosonlookupFPATempDegCx10()
+        fpaTempCorr2[n] = pyClient2.bosonlookupFPATempDegCx10()
+        print('\nFPA Temp: ' + str(fpaTempCorr1[n][1]/10) + ' C,')
+        print('\nFPA Temp: ' + str(fpaTempCorr2[n][1]/10) + ' C,')
         
         
         
-    """Call image bytes from buffer"""
-    #create np array of uint8 type
-    image8b_1 = np.zeros((pixRows,2*pixCols),dtype = np.uint8,order='C')
-    image8b_2 = np.zeros((pixRows,2*pixCols),dtype = np.uint8,order='C')
-    image16b_1 = np.zeros((pixRows,pixCols),dtype = np.uint16,order='C')
-    image16b_2 = np.zeros((pixRows,pixCols),dtype = np.uint16,order='C')
-    bytesPerRead = 160
-    readsPerRow = (pixCols*2)/bytesPerRead
-    bufNum = 0
-        
-    for i in np.arange(0,pixRows,1):
-        #pixRead_1 = cam1.read_pixels(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
-        image8b_1[i,0:bytesPerRead] = pixRead_1[1]
-                
-        #pixRead2_1 = cam1.read_pixels(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead2_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        image8b_1[i,bytesPerRead:2*bytesPerRead] = pixRead2_1[1]
-                
-        #pixRead3_1 = cam1.read_pixels(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead3_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        image8b_1[i,2*bytesPerRead:3*bytesPerRead] = pixRead3_1[1]
-                
-        #pixRead4_1 = cam1.read_pixels(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead4_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+            # get read size - output is a tuple
+        try:
+            #memGetSizeRet = cam1.get_imSize()
+            memGetSizeRet = pyClient.memGetCaptureSize()
+            
+            # store capture size in bytes in new vars for later use
+            capSizeinBytes = memGetSizeRet[1]
+            pixRows = memGetSizeRet[2]
+            pixCols = memGetSizeRet[3]
     
-        image8b_1[i,3*bytesPerRead:4*bytesPerRead] = pixRead4_1[1]
+        except:
+            print('Something went wrong during memGetCaptureSize() call. Exiting...')
+            cam1.close_port()
+            cam2.close_port()
+            sys.exit(1)
+       
+        
+        if n < 1:
+            image1 = np.zeros((pixRows,pixCols),dtype = np.uint16,order='C')
+            image2 = np.zeros((pixRows,pixCols),dtype = np.uint16,order='C')
+        
+        
+        """Call image bytes from buffer"""
+        #create np array of uint8 type
+        image8b_1 = np.zeros((pixRows,2*pixCols),dtype = np.uint8,order='C')
+        image8b_2 = np.zeros((pixRows,2*pixCols),dtype = np.uint8,order='C')
+        image16b_1 = np.zeros((pixRows,pixCols),dtype = np.uint16,order='C')
+        image16b_2 = np.zeros((pixRows,pixCols),dtype = np.uint16,order='C')
+        bytesPerRead = 160
+        readsPerRow = (pixCols*2)/bytesPerRead
+        bufNum = 0
+        
+        for i in np.arange(0,pixRows,1):
+                #pixRead_1 = cam1.read_pixels(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
+                image8b_1[i,0:bytesPerRead] = pixRead_1[1]
                 
-    print('Finished Reading Image from Cam 1 ')        
+                #pixRead2_1 = cam1.read_pixels(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead2_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                image8b_1[i,bytesPerRead:2*bytesPerRead] = pixRead2_1[1]
+                
+                #pixRead3_1 = cam1.read_pixels(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead3_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                image8b_1[i,2*bytesPerRead:3*bytesPerRead] = pixRead3_1[1]
+                
+                #pixRead4_1 = cam1.read_pixels(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead4_1 = pyClient.memReadCapture(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+    
+                image8b_1[i,3*bytesPerRead:4*bytesPerRead] = pixRead4_1[1]
+                
+        print('Finished Reading Image from Cam 1 ' + str(n+1))        
      
         
-    for i in np.arange(0,pixRows,1):
-        #pixRead_2 = cam2.read_pixels(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
+        for i in np.arange(0,pixRows,1):
+                #pixRead_2 = cam2.read_pixels(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=4*i*bytesPerRead,sizeInBytes=bytesPerRead)  # output is a tuple
     
-        image8b_2[i,0:bytesPerRead] = pixRead_2[1]
+                image8b_2[i,0:bytesPerRead] = pixRead_2[1]
                 
-        #pixRead2_2 = cam2.read_pixels(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead2_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        image8b_2[i,bytesPerRead:2*bytesPerRead] = pixRead2_2[1]
+                #pixRead2_2 = cam2.read_pixels(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead2_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=((4*i+1)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                image8b_2[i,bytesPerRead:2*bytesPerRead] = pixRead2_2[1]
                 
-        #pixRead3_2 = cam2.read_pixels(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead3_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        image8b_2[i,2*bytesPerRead:3*bytesPerRead] = pixRead3_2[1]
+                #pixRead3_2 = cam2.read_pixels(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead3_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=((4*i+2)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                image8b_2[i,2*bytesPerRead:3*bytesPerRead] = pixRead3_2[1]
                 
-        #pixRead4_2 = cam2.read_pixels(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        pixRead4_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
-        image8b_2[i,3*bytesPerRead:4*bytesPerRead] = pixRead4_2[1]
+                #pixRead4_2 = cam2.read_pixels(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                pixRead4_2 = pyClient2.memReadCapture(bufferNum=bufNum,offset=((4*i+3)*bytesPerRead),sizeInBytes=bytesPerRead)  # output is a tuple
+                image8b_2[i,3*bytesPerRead:4*bytesPerRead] = pixRead4_2[1]
                 
-    print('Finished Reading Image from Cam 2 ')       
+        print('Finished Reading Image from Cam 2 ' + str(n+1))       
         
         
         
         
         
         
-    image16b_1 = image8b_1[:,:].view(np.uint16)    # assuming host and camera endianess match
-    image16b_1 = image16b_1.view('<u2')                 # <- little endian u- unsigned 2- bytes
+        image16b_1 = image8b_1[:,:].view(np.uint16)    # assuming host and camera endianess match
+        image16b_1 = image16b_1.view('<u2')                 # <- little endian u- unsigned 2- bytes
          
-    image16b_2 = image8b_2[:,:].view(np.uint16)    # assuming host and camera endianess match
-    image16b_2 = image16b_2.view('<u2')         
+        image16b_2 = image8b_2[:,:].view(np.uint16)    # assuming host and camera endianess match
+        image16b_2 = image16b_2.view('<u2')         
+    
+        image1 = image1 + image16b_1
+        imade2 = image2 + image16b_2
+        
+        end = time.perf_counter()
+        print(str(round(end-start)) + " seconds to run one loop")
+        
+        if n == loopsToRun-1: #if on last loop, exit before wait time
+            break;
+        
+        print('begin wait for ' + str(secondsToWait-round(end-start)) + ' seconds')
+        time.sleep(secondsToWait-(end-start)) #wait for specified time, subtracting time for loop to run
     
     
-    """Show image"""
-    fig = plt.figure(figsize=(20,8))
-    ax = fig.add_subplot(1,1,1)
-    cax = ax.matshow(image16b_1)
-    fig.colorbar(cax)
-    plt.show()
-        
-    fig = plt.figure(figsize=(20,8))
-    ax = fig.add_subplot(1,1,1)
-    cax = ax.matshow(image16b_2)
-    fig.colorbar(cax)
-    plt.show()
-        
-    c1 = np.array(image16b_1)
-    c2 = np.array(image16b_2)
-    spec1 = np.ones(100)
-    spec2 = np.ones(100)
-    for j in range(5):
-        for i in range(100):
-            spec1[i]=spec1[i]+c1[145+j,80+i]
-            spec2[i]=spec2[i]+c2[135+j,100+i]
-                
-        
-    plt.plot(spec1)
-    plt.title("Camera 1")
-    plt.show()
-        
-    plt.plot(spec2)
-    plt.title("Camera 2")
-    plt.show()
-        
+    
+    
+    
     """ Save image"""
-    im1 = Image.fromarray(image16b_1)
+    im1 = Image.fromarray(image1/loopsToRun)
     im1.save(rootFileName + fileName + '_CAM1.tiff')
         
-    im2 = Image.fromarray(image16b_2)
+    im2 = Image.fromarray(image2/loopsToRun)
     im2.save(rootFileName + fileName+'_CAM2.tiff')
-
+        
     
-    fpaTempCorr1 = fpaTempCorr1
-    fpaTempCorr2 = fpaTempCorr2
+    fpaTempCorr1 = fpaTempCorr1[:,1]/10
+    fpaTempCorr2 = fpaTempCorr2[:,1]/10
     np.savetxt(rootFileName + fileName +'_CAM1_fpaTempCorr_degC',fpaTempCorr1)
     np.savetxt(rootFileName + fileName +'_CAM2_fpaTempCorr_degC',fpaTempCorr2)
     
@@ -316,6 +333,11 @@ def main(args):
     cam1.disable_sync()
     cam2.disable_sync()
     
+    mode1 = cam1.get_syncMode()
+    mode2 = cam2.get_syncMode()
+    print(mode1)
+    print (mode2)
+    
     cam1.close_port()
     cam2.close_port()
     
@@ -324,7 +346,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-fp', type=str, default="", help='filepath')
-    parser.add_argument('-name', type=str, default="NA", help='angle of linear polarizer')
+    parser.add_argument('-name', type=str, default="rightpol", help='angle of linear polarizer')
     parser.add_argument('-gain', type=bool, default=False, help='True = high gain')
+    parser.add_argument('-avg', type=int, default=20, help='number of frames to average over')
     args = parser.parse_args()
     main(args)
