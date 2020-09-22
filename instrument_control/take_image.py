@@ -14,6 +14,7 @@ import time
 import argparse
 from Cam1 import Camera1
 from Cam2 import Camera2
+import h5py 
 
 def main(args):
    
@@ -298,7 +299,7 @@ def main(args):
         image16b_2 = image16b_2.view('<u2')         
     
         image1 = image1 + image16b_1
-        imade2 = image2 + image16b_2
+        image2 = image2 + image16b_2
         
         end = time.perf_counter()
         print(str(round(end-start)) + " seconds to run one loop")
@@ -313,18 +314,17 @@ def main(args):
     
     
     
-    """ Save image"""
-    im1 = Image.fromarray(image1/loopsToRun)
-    im1.save(rootFileName + fileName + '_CAM1.tiff')
-        
-    im2 = Image.fromarray(image2/loopsToRun)
-    im2.save(rootFileName + fileName+'_CAM2.tiff')
-        
+    """ Save hdf5 files"""
     
     fpaTempCorr1 = fpaTempCorr1[:,1]/10
     fpaTempCorr2 = fpaTempCorr2[:,1]/10
-    np.savetxt(rootFileName + fileName +'_CAM1_fpaTempCorr_degC',fpaTempCorr1)
-    np.savetxt(rootFileName + fileName +'_CAM2_fpaTempCorr_degC',fpaTempCorr2)
+   
+    f = h5py.File(fileName +".hdf5", "a") 
+    dset1 = f.create_dataset("image1",data = image1)
+    dset2 = f.create_dataset("image2",data = image2)
+    t1 =  f.create_dataset("temp1",data = fpaTempCorr1)
+    t2 =  f.create_dataset("temp2",data = fpaTempCorr2)
+    f.close()
     
     
    
@@ -346,7 +346,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-fp', type=str, default="", help='filepath')
-    parser.add_argument('-name', type=str, default="rightpol", help='angle of linear polarizer')
+    parser.add_argument('-name', type=str, default="cold", help='angle of linear polarizer')
     parser.add_argument('-gain', type=bool, default=False, help='True = high gain')
     parser.add_argument('-avg', type=int, default=20, help='number of frames to average over')
     args = parser.parse_args()
