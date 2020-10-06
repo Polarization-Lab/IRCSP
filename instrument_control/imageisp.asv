@@ -1,0 +1,39 @@
+im1 = h5read('center924_8.hdf5','/image1');
+im1pol = h5read('right924_8.hdf5','/image1');
+im1dark = h5read('dark_low1.hdf5','/image1');
+im2 = h5read('center924_8.hdf5','/image2');
+im2pol = h5read('right924_8.hdf5','/image2');
+im2dark = h5read('dark_low1.hdf5','/image2');
+
+
+%% set plotting ranges
+
+c1r= [5.22*10^4,5.29*10^4];
+c2r =[2.5*10^4,2.9*10^4];
+
+ subplot(2,3,1);
+ imagesc(im1(100:160,100:160))
+ colorbar
+ caxis(c1r)
+ title('Camera 1, Unpolarized')
+ 
+ 
+ subplot(2,3,2);
+ imagesc(im2(100:160,100:160))
+ colorbar
+ caxis(c2r)
+  title('Camera 2, Unpolarized')
+  
+  subplot(2,2,3);
+ imagesc(im1dark(100:160,100:160))
+ colorbar
+ caxis(c1r)
+ title('Camera 1, Darkfield')
+
+ 
+ subplot(2,2,4);
+ imagesc(im2dark(100:160,100:160))
+ colorbar
+ caxis(c2r)
+  title('Camera 2, Darkfield')
+  

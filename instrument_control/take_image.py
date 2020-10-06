@@ -346,8 +346,8 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-fp', type=str, default="", help='filepath')
-    parser.add_argument('-name', type=str, default="cold", help='angle of linear polarizer')
+    parser.add_argument('-name', type=str, default="test", help='angle of linear polarizer')
     parser.add_argument('-gain', type=bool, default=False, help='True = high gain')
-    parser.add_argument('-avg', type=int, default=20, help='number of frames to average over')
+    parser.add_argument('-avg', type=int, default=2, help='number of frames to average over')
     args = parser.parse_args()
     main(args)
