@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+\\\# -*- coding: utf-8 -*-
 """
 Created on Tue Dec 17 16:16:50 2019
 
@@ -7,11 +7,14 @@ Created on Tue Dec 17 16:16:50 2019
 from BosonSDK.ClientFiles_Python import Client_API as pyClient
 from BosonSDKCopy.ClientFiles_Python import Client_API as pyClient2
 import numpy as np
+import matplotlib.pyplot as plt
 import sys
+from PIL import Image
 import time
+import argparse
 from Cam1 import Camera1
 from Cam2 import Camera2
-
+import h5py 
 
 def take_image(avg):
    
@@ -44,7 +47,7 @@ def take_image(avg):
     
     #NUC filters
     #   Filters that are not configurable here: FFC, temperature Correction, SFFC
-    gain = False
+    gain = args.gain 
     bpr = False
     
     #Spatial and Temporal Filtering
@@ -281,6 +284,11 @@ def take_image(avg):
                 
         print('Finished Reading Image from Cam 2 ' + str(n+1))       
         
+        
+        
+        
+        
+        
         image16b_1 = image8b_1[:,:].view(np.uint16)    # assuming host and camera endianess match
         image16b_1 = image16b_1.view('<u2')                 # <- little endian u- unsigned 2- bytes
          
@@ -328,5 +336,3 @@ def take_image(avg):
     cam2.close_port()
     
     return( fpaTempCorr1, fpaTempCorr2,image1 , image2)
-    
-  
