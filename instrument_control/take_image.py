@@ -77,11 +77,11 @@ def take_image(avg):
         gainState2 = cam2.get_gainState()
         bprState2 = cam2.get_bprState()
         
-        print('\nCamera 1 gain mode: ' + str(gainState1[1]))
-        print('Camera 1 BPR State : ' + str(bprState1))
+        #print('\nCamera 1 gain mode: ' + str(gainState1[1]))
+        #print('Camera 1 BPR State : ' + str(bprState1))
         
-        print('Camera 2 gain mode: ' + str(gainState2[1]))
-        print('Camera 2 BPR State : ' + str(bprState2))
+        #print('Camera 2 gain mode: ' + str(gainState2[1]))
+        #print('Camera 2 BPR State : ' + str(bprState2))
         
     except:
         print('Something wrong calling NUC correction states. Closing cam port and exiting...')
@@ -123,13 +123,13 @@ def take_image(avg):
         tfState2 = cam2.get_tfState()
         spnrState2 = cam2.get_spnrState()
         
-        print('\nCam 1 SCNR Status: ' + str(scnrState1))
-        print('Cam 1 TF Status: ' + str(tfState1))
-        print('Cam 1 SPNR Status: ' + str(spnrState1))
+        #print('\nCam 1 SCNR Status: ' + str(scnrState1))
+        #print('Cam 1 TF Status: ' + str(tfState1))
+        #print('Cam 1 SPNR Status: ' + str(spnrState1))
         
-        print('Cam 2 SCNR Status: ' + str(scnrState2))
-        print('Cam 2 TF Status: ' + str(tfState2))
-        print('Cam 2 SPNR Status: ' + str(spnrState2))
+        #print('Cam 2 SCNR Status: ' + str(scnrState2))
+        #print('Cam 2 TF Status: ' + str(tfState2))
+        #print('Cam 2 SPNR Status: ' + str(spnrState2))
         
         
     except:
@@ -144,8 +144,8 @@ def take_image(avg):
     
     mode1 = cam1.get_syncMode()
     mode2 = cam2.get_syncMode()
-    print(mode1)
-    print (mode2)
+    #print(mode1)
+    #print (mode2)
     
     cam1.set_asMaster()
     cam2.set_asSlave()
@@ -153,8 +153,8 @@ def take_image(avg):
     
     mode1 = cam1.get_syncMode()
     mode2 = cam2.get_syncMode()
-    print(mode1)
-    print (mode2)
+    #print(mode1)
+    #print (mode2)
 
 
     """IMAGE ACQUISITION FOR CALIBRATION
@@ -173,7 +173,7 @@ def take_image(avg):
     
     
     
-    print('\n\n---START TRIAL CAPTURES---\n')
+    print('\n\n---START CAPTURES---\n')
     for n in range(loopsToRun):
         start = time.perf_counter()
     
@@ -306,8 +306,8 @@ def take_image(avg):
     
     """data to return"""
     
-    fpaTempCorr1 = fpaTempCorr1[:,1]/10
-    fpaTempCorr2 = fpaTempCorr2[:,1]/10
+    fpaTempCorr1 = np.mean(fpaTempCorr1[:,1]/10)
+    fpaTempCorr2 = np.mean(fpaTempCorr2[:,1]/10)
     
     image1 = image1/avg
     image2 = image2/avg
@@ -321,12 +321,9 @@ def take_image(avg):
     
     mode1 = cam1.get_syncMode()
     mode2 = cam2.get_syncMode()
-    print(mode1)
-    print (mode2)
-    
+   
     cam1.close_port()
     cam2.close_port()
     
     return( fpaTempCorr1, fpaTempCorr2,image1 , image2)
     
-  
