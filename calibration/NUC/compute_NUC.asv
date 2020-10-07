@@ -1,0 +1,10 @@
+%% Import data
+fn = "test2.h5";
+[cam1,cam2,t1,t2] = load_NUCdata(fn);
+
+%% Plot Temperatures 
+hold on
+plot(t1)
+plot(t2)
+xlabel('focal plane temperature (FPA))
+hold off

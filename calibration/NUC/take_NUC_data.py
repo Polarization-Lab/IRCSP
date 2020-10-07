@@ -16,9 +16,9 @@ import time
 
 
 avg = 5;        #number of images to averave over
-wait = 60 * 5 ; #time to wait between aquisitions in sec
+wait = 60 * 1 ; #time to wait between aquisitions in sec
 meas_num = 10   #number of measurements 
-name = "test2" 
+name = "test4" 
 save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\'
 
 
