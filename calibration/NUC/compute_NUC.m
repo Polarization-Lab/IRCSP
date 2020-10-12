@@ -1,5 +1,5 @@
 %% Import data
-fn = "test3.h5";
+fn = "target40C.h5";
 [rcam1,rcam2,t1,t2] = load_NUCdata(fn);
 
 %% Plot Temperatures 
@@ -14,8 +14,9 @@ legend('Camera 1','Camera 2')
 
 subplot(2,1,2)
 hold on
-plot(squeeze(cam1(120,100,:)),'.-')
-plot(squeeze(cam2(120,100,:)),'.-')
+plot(squeeze(rcam1(130,130,:)),'.-')
+plot(squeeze(rcam2(148,140,:)),'.-')
+ylim([1.17e4, 1.21e4])
 ylabel('avg. FPA value')
 xlabel('measurement number')
 hold off
