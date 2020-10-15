@@ -41,16 +41,10 @@ t212 = t2(1) - t2(5);
 t234 = t2(6) - t2(10);
 
 %% Save Computed
-targets = [25,30,35,40,45,50,55];
-r1=[];r2 = [];t1s=[];t2s=[];
-i = 1;
-while i < 6
-    t = num2str(targets(i));
+targets = [25,30,35,40,45,50,55]
+r1=[];r2 = [];t1=[];t2=[];
+for i in targets
+    t = num2str(targets);
     fn = strcat("target",t,"C.h5");
     [rcam1,rcam2,t1,t2] = load_NUCdata(fn);
-    cat(1,t1s,t1);
-    cat(1,t2s,t2);
-    cat(1,r1,squeeze(rcam1(130,130,:)));
-    cat(1,r2,squeeze(rcam1(148,140,:)));
-    i = i+1;
 end

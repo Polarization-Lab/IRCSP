@@ -16,14 +16,12 @@ import time
 
 
 avg = 3;        #number of images to averave over
-wait = 60 * 1 ; #time to wait between aquisitions in sec
+wait = 20 * 1 ; #time to wait between aquisitions in sec
 meas_num = 20   #number of measurements 
-name = "target40C" 
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\'
+name = "target60C" 
+save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\oct15\\'
 
 
-#create hdf5 file
-hf = h5py.File(save_path + name + '.h5', 'w')
 
 #preallocate space
 temp1 = np.zeros(meas_num)
@@ -42,7 +40,10 @@ while i < meas_num:
     print("begin wait for "+ str(wait)+" seconds")
     time.sleep(wait)
     i = i+1
- 
+
+#create hdf5 file
+hf = h5py.File(save_path + name + '.h5', 'w')
+
 hf.create_dataset('imgs1', data=ims1)
 hf.create_dataset('imgs2', data=ims2)
 hf.create_dataset('temps1', data=temp1)
