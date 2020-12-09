@@ -287,8 +287,8 @@ def take_image(avg):
         image16b_2 = image8b_2[:,:].view(np.uint16)    # assuming host and camera endianess match
         image16b_2 = image16b_2.view('<u2')         
     
-        image1 = image1 + image16b_1
-        image2 = image2 + image16b_2
+        image1 = image1 + image16b_1/avg
+        image2 = image2 + image16b_2/avg
         
         
         end = time.perf_counter()
@@ -308,12 +308,7 @@ def take_image(avg):
     
     fpaTempCorr1 = np.mean(fpaTempCorr1[:,1]/10)
     fpaTempCorr2 = np.mean(fpaTempCorr2[:,1]/10)
-    
-    image1 = image1/avg
-    image2 = image2/avg
-    
-    
-   
+               
     """REMOVE MASTER SLAVE"""
     
     cam1.disable_sync()

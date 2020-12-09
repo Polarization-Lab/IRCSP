@@ -1,33 +1,39 @@
 %% Import data
-fns = "target55C.h5";
+fn ="bb1.h5";
 [rcam1,rcam2,t1,t2] = load_NUCdata(fn);
+fn2 = "bb5.h5";
+[rcam11,rcam21,t11,t21] = load_NUCdata(fn2);
 
 %% Plot Temperatures 
+figure(1)
+
 subplot(2,1,1)
 hold on
-plot(t1,'.-')
-plot(t2,'.-')
-ylabel('focal plane temperature (^\circ  C)')
-xlabel('measurement number')
+plot(t1,squeeze(rcam1(130,140,:)),'o')
+plot(t11,squeeze(rcam11(130,140,:)),'o')
+ylabel('pixel response [ADC]')
+xlabel('FPA temperature')
+%ylim([1.180e4 1.2e4])
+title('Camera 1')
 hold off
-legend('Camera 1','Camera 2')
+
 
 subplot(2,1,2)
 hold on
-plot(squeeze(rcam1(130,130,:)),'.-')
-plot(squeeze(rcam2(148,140,:)),'.-')
-ylim([1.17e4, 1.2e4])
-ylabel('avg. FPA value')
-xlabel('measurement number')
+title('Camera 2')
+plot(t2,squeeze(rcam2(148,160,:)),'o')
+plot(t21,squeeze(rcam21(148,160,:)),'o')
+ylabel('pixel response [ADC]')
+xlabel('FPA temperature')
+%ylim([1.169e4 1.2e4])
 hold off
-legend('Camera 1','Camera 2')
 
 %% Select which data points to use for each camera
 
 
 
 %% Select ROI and input to NUC function
-%cam 1
+
 r112 = rcam1(:,:,1)-rcam1(:,:,5);
 r134 = rcam1(:,:,6)-rcam1(:,:,10);
 t112 = t1(1) - t1(5);
@@ -41,16 +47,42 @@ t212 = t2(1) - t2(5);
 t234 = t2(6) - t2(10);
 
 %% Save Computed
-targets = [25,30,35,40,45,50,55];
+targets = [2,3,4,5,6,7,8,9,10];
 r1=[];r2 = [];t1s=[];t2s=[];
 i = 1;
-while i < 6
-    t = num2str(targets(i));
-    fn = strcat("target",t,"C.h5");
-    [rcam1,rcam2,t1,t2] = load_NUCdata(fn);
-    cat(1,t1s,t1);
-    cat(1,t2s,t2);
-    cat(1,r1,squeeze(rcam1(130,130,:)));
-    cat(1,r2,squeeze(rcam1(148,140,:)));
-    i = i+1;
-end
+% samp = 10;
+% figure(2)
+% subplot(2,1,1)
+% hold on
+% while i < samp
+%     t = num2str(targets(i));
+%     fn = strcat("dark",t,".h5");
+%     [rcam1,rcam2,t1,t2] = load_NUCdata(fn);
+%     
+%     r1 = squeeze(rcam1(130,150,:));
+%     ylim([1.15e4, 1.2e4])
+%     plot(t1,r1,'o')
+%     ylabel('focal plane temperature (^\circ  C)')
+%     xlabel('measurement number')
+%     i = i+1;
+% end
+% hold off 
+% 
+% 
+% i = 1;
+% subplot(2,1,2)
+% hold on
+%  while i < samp
+%     t = num2str(targets(i));
+%     fn = strcat("dark",t,".h5");
+%     [rcam1,rcam2,t1,t2] = load_NUCdata(fn);
+%     r2 = squeeze(rcam2(148,150,:));
+%     plot(t2,r2,'o')
+%     ylim([1.15e4 1.2e4])
+%     ylabel('focal plane temperature (^\circ  C)')
+%     xlabel('measurement number')
+%     i = i+1;
+%  end
+% 
+% hold off
+%  
