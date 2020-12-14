@@ -21,13 +21,13 @@ import h5py
 from mono_control import initialize,shutter, changeWavelength
 
 save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\mono_data\\'
-name = 'camera1'
+name = 'boson3_test'
 
 #choose the ROI
-ymin = 179;
-ymax = 182;
-xmin = 156;
-xmax = 159;
+ymin = 0;
+ymax = 250;
+xmin = 0;
+xmax = 320;
 
 #initialize monochromator
 instr = initialize()
