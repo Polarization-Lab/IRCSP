@@ -44,6 +44,3 @@ def shutter(instr,value):
     time.sleep(1)
     print('shutter is : ' + instr.query('shutter?'))
     
-instr = initialize() 
-shutter(instr,1)
-changeWavelength(instr, 8)  
