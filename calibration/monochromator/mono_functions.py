@@ -46,9 +46,16 @@ def create_mono_df(data_path, name):
 
     return(result)
     
- def locate_max(df, image_number, ROI):
-     '''
-     located the index of the maximum response in each row in the given ROI
-     image number is index of desired array in data set 
-     df is data frame made using create_mono_df
-     '''
+def locate_max(df,attr, image_number,xmin,xmax,ymin,ymax,ax):
+    '''
+    located the index of the maximum response in each row in the given ROI
+    image number is index of desired array in data set 
+    df is data frame made using create_mono_df
+    attr is the attribute "cam1, cam2 ect
+    ax is -1 for rows, and 1 for columns
+    '''
+    arr = df[attr][image_number]
+    arr=arr[xmin:xmax,ymin:ymax]
+    value = np.max(arr,axis = ax)
+    loc   = np.argmax(arr,axis = ax)
+    return(value,loc)
