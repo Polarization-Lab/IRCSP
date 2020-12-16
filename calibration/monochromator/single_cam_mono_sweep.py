@@ -21,7 +21,7 @@ import h5py
 from mono_control import initialize,shutter, changeWavelength
 
 save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\mono_data\\'
-name = 'boson3_test'
+name = 'cam1_test'
 
 #choose the ROI
 ymin = 0;

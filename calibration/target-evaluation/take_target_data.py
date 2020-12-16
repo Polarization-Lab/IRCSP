@@ -16,8 +16,8 @@ import time
 
 
 avg = 5;        #number of images to averave over
-name = "left5" 
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\Cal_target_analysis\\'
+name = "58C" 
+save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\calibration_data\\'
 
 
 #preallocate space

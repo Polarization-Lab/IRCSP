@@ -15,11 +15,11 @@ import h5py
 import time
 
 
-avg = 30;        #number of images to averave over
+avg = 1;        #number of images to averave over
 wait = 60 * 0.1 ; #time to wait between aquisitions in sec
-meas_num = 1  #number of measurements 
-name = "bb_long3"
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\oct22\\'
+meas_num = 10  #number of measurements 
+name = "dark3"
+save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\dec15\\'
 
 
 
