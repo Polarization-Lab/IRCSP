@@ -22,7 +22,7 @@ import time
 
 
 save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\Cal_target_analysis\\dec16\\'
-name = 'cam1_center'
+name = 'cam2_left'
 
 #choose the ROI
 ymin = 0;

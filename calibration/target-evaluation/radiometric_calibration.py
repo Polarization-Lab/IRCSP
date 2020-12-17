@@ -12,6 +12,9 @@ from statistics import mean
 from scipy.optimize import curve_fit
 
 
+def fp(x, A, B): # this is your 'straight line' y=f(x)
+    return A*x + B
+
 def pixel_registration(array,cal_file,waves,ymin,ymax):
     #import cal file
     cal =  h5py.File(cal_file, "r")
@@ -24,7 +27,7 @@ def pixel_registration(array,cal_file,waves,ymin,ymax):
     for i in range(len(array)):
         for l in range(len(waves)):    
             w=  waves[l]
-            j = int(round(f(w,pa[0],pa[1])))
+            j = int(round(fp(w,pa[0],pa[1])))
             values = array[i,j-1:j+1]
             value = np.mean(values)
             new[i,l] = value
@@ -93,6 +96,9 @@ def make_avg_df(path,name1,name2,cal_file1,cal_file2, waves,ymin1,ymax1,ymin2,ym
     df["totalrad"] = df['ims2']+df['ims1']
     df["totalstd"] = (df['s2']**2+df['s1']**2)**0.5
     return(df)
+
+def f(x, A, B): # this is your 'straight line' y=f(x)
+    return A*x**2 + B
 
 def finv(y,A,B):
     return ((y-B)/A)**0.5
