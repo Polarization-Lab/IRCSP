@@ -21,8 +21,8 @@ import h5py
 import time
 
 
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\calibration_data\\dec16\\'
-name = 'cam2_170deg'
+save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\Cal_target_analysis\\dec16\\'
+name = 'cam1_center'
 
 #choose the ROI
 ymin = 0;
@@ -32,7 +32,7 @@ xmax = 320;
 
 
 #choose wavelengths
-samps    = 50;
+samps    = 100;
 temp1 = np.zeros(samps);temp2 = np.zeros(samps)
 avgs1 = np.zeros(samps);avgs2 = np.zeros(samps)
 images1   = [];images2   = []
@@ -53,9 +53,9 @@ while i <samps:
     
     i = i+1;
     if i <samps:
-        time.sleep(0.1)
+        time.sleep(1)
     
-plt.plot(temp1,avgs1)
+plt.plot(temp1,avgs1,'.')
 plt.show()
 
 
