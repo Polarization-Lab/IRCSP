@@ -45,7 +45,7 @@ def create_NUC_df(data_path, name):
         num_keys = len(keys)
     
     
-    #put monochromator data into panda dataframe    
+    #put data into panda dataframe    
     with h5py.File(filename, "r") as f:
         # List all groups
         a_group_key = list(f.keys())[0]
@@ -66,3 +66,18 @@ def create_NUC_df(data_path, name):
         i = i +1
 
     return(result)
+
+def collapse_df(df):
+    '''this function collapses the df by FPA temp
+    returns a list of the averages images and the FPA temps present in the df""
+    '''
+    values = df['temp1'].unique()
+    images1=[]
+    for i in range(len(values)):
+        inds = df.index[df['temp1'] == values[i]]
+        im = np.zeros([256,320])
+        for j in inds:
+            im = im + df['images1'][j]
+        im = im/len(inds)
+        images1.append(np.around(im,decimals =0))
+    return(values,images1)    
