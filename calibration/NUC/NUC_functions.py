@@ -152,3 +152,30 @@ def calc_NUC_coef(tFPAS,rs,x,y):
     #now compute m,b
     [m , b ] = np.matmul(matinv, delta_r)
     return(m,b)
+
+def import_NUC(cal_path):
+    '''imports calibration coefficients stored in hdf5'''
+    hf = h5py.File(cal_path, 'r')
+    m1 = np.array(hf['m1']);
+    b1 = np.array(hf['b1']);
+    T_ref1 = np.array(hf['T_ref1']);
+    m2 = np.array(hf['m2']);
+    b2 = np.array(hf['b2']);
+    T_ref2 = np.array(hf['T_ref2']);
+    return(m1,b1,T_ref1,m2,b2,T_ref2)
+
+def rc(r,T,m,b,T_ref):
+    ''''this is the NUC correction function'''
+    return((r+b*(T_ref-T))/(1-m*(T_ref-T)))
+
+def apply_NUC(image,T,m,b,T_ref):
+    '''this function applies the NUC to an image'''
+    r_c =  np.zeros([256,320]); 
+    for i in range(320):
+        for j in range(256):
+            r = image[j,i]
+            M = m[j,i]
+            B = b[j,i]
+            ic =  rc(r,T,M,B,T_ref)
+            r_c[j,i] = ic
+    return(r_c)        
