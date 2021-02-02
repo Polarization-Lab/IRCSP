@@ -3,9 +3,6 @@
 single_cam_mono_sweep
 Created on Wed Dec  9 13:12:18 2020
 
-This script will sweep over wavelength on the monochomator
-for a single measurement configuration.
-
 This includes image capture for a single camera (no MS)
 And a single polarization state (unpol, H,V, ect)
 Output will be saved as a hdf5 file 
