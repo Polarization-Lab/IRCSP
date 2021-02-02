@@ -21,8 +21,8 @@ import h5py
 import time
 
 
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\Cal_target_analysis\\dec16\\'
-name = 'cam2_left'
+save_path = 'C:\\Users\\khart\Documents\\IRCSP2_data\Cal_target_analysis\\EnvChamber-01292021\\'
+name = 'ST25_ETneg35_NumSamp500'
 
 #choose the ROI
 ymin = 0;
@@ -32,7 +32,7 @@ xmax = 320;
 
 
 #choose wavelengths
-samps    = 100;
+samps    = 500;
 temp1 = np.zeros(samps);temp2 = np.zeros(samps)
 avgs1 = np.zeros(samps);avgs2 = np.zeros(samps)
 images1   = [];images2   = []
