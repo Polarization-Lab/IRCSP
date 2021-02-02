@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-single_cam_mono_sweep
-Created on Wed Dec  9 13:12:18 2020
-
 This includes image capture for a single camera (no MS)
 And a single polarization state (unpol, H,V, ect)
 Output will be saved as a hdf5 file 
 Uses flirpy, make sure enviroment is open
-uses python-usbtmc
-
 @author: khart
 """
 from flirpy.camera.boson import Boson
@@ -18,8 +13,8 @@ import h5py
 import time
 
 
-save_path = 'C:\\Users\\khart\Documents\\IRCSP2_data\Cal_target_analysis\\EnvChamber-01292021\\'
-name = 'ST25_ETneg35_NumSamp500'
+save_path = 'C:\\Users\\khart\Documents\\IRCSP2_data\calibration_data\LUT\\2221\\long_exposure\\'
+name = 'cam2_40.0c'
 
 #choose the ROI
 ymin = 0;
@@ -29,7 +24,7 @@ xmax = 320;
 
 
 #choose wavelengths
-samps    = 500;
+samps    = 50;
 temp1 = np.zeros(samps);temp2 = np.zeros(samps)
 avgs1 = np.zeros(samps);avgs2 = np.zeros(samps)
 images1   = [];images2   = []
