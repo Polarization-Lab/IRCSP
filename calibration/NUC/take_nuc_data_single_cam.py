@@ -14,7 +14,7 @@ import time
 
 
 save_path = 'C:\\Users\\khart\Documents\\IRCSP2_data\calibration_data\LUT\\2221\\long_exposure\\'
-name = 'cam2_40.0c'
+name = 'cam2_30.0c'
 
 #choose the ROI
 ymin = 0;
