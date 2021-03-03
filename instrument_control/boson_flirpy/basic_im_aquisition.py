@@ -5,17 +5,17 @@ Created on Tue Sep  8 09:50:57 2020
 @author: khart
 """
 
-
-from flirpy.camera.boson import Boson
+from flirpy.camera.boson import Boson 
 import matplotlib.pyplot as plt
-
+import threading 
 
 camera1 = Boson(port='COM5')
 camera2 = Boson(port='COM6')
 
-#set up camera
-camera1.setup_video()
-camera2.setup_video()
+print(camera1.find_serial_device())
+print(camera2.find_serial_device())
+
+
 
 #set FFC to manual
 camera1.set_ffc_manual()
