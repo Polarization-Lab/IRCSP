@@ -71,16 +71,26 @@ def collapse_df(df):
     '''this function collapses the df by FPA temp
     returns a list of the averages images and the FPA temps present in the df""
     '''
-    values = df['temp1'].unique()
+    values1 = df['temps1'].unique()
     images1=[]
-    for i in range(len(values)):
-        inds = df.index[df['temp1'] == values[i]]
+    for i in range(len(values1)):
+        inds = df.index[df['temps1'] == values1[i]]
         im = np.zeros([256,320])
         for j in inds:
-            im = im + df['images1'][j]
+            im = im + df['imgs1'][j]
         im = im/len(inds)
         images1.append(np.around(im,decimals =0))
-    return(values,images1)    
+        
+    values2 = df['temps2'].unique()
+    images2=[]
+    for i in range(len(values2)):
+        inds = df.index[df['temps2'] == values2[i]]
+        im = np.zeros([256,320])
+        for j in inds:
+            im = im + df['imgs2'][j]
+        im = im/len(inds)
+        images2.append(np.around(im,decimals =0))    
+    return(values1,images1,values2,images2)    
 
 
 

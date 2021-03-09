@@ -10,14 +10,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 import h5py
+import winsound
 
 
 
 """options for measurement"""
-name = "scan2"
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\flirpytests\\'
-wait = 3 ; #time to wait between aquisitions in sec
-meas_num = 300  #number of measurements 
+name = "cool_down60"
+save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\mar02\\'
+wait = 30 ; #time to wait between aquisitions in sec
+meas_num = 100  #number of measurements 
 
 
 
@@ -43,6 +44,7 @@ for i in range(meas_num):
     t1s[i] = camera1.get_fpa_temperature()
     t2s[i] = camera2.get_fpa_temperature()
     
+    
     #take image
     im1 = camera1.grab(device_id = 1)
     im2 = camera2.grab(device_id = 2)
@@ -55,6 +57,8 @@ for i in range(meas_num):
     r2s[i] = np.mean(im2[100:150,100:150])
     
     print("on measurement "+ str(i))
+    print('cam 1 is ' + str(t1s[i]))
+    print('cam 2 is ' + str(t2s[i]))
     time.sleep(wait)
     
 camera1.close()
@@ -75,3 +79,7 @@ hf.create_dataset('temps1', data=t1s)
 hf.create_dataset('temps2', data=t2s)
 hf.close()
 
+#beep to signal measurement end
+duration = 1000  # milliseconds
+freq = 440  # Hz
+winsound.Beep(freq, duration)
