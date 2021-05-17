@@ -15,10 +15,10 @@ import winsound
 
 
 """options for measurement"""
-name = "cool_down60"
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\mar02\\'
-wait = 30 ; #time to wait between aquisitions in sec
-meas_num = 100  #number of measurements 
+name = "dark"
+save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\apr06\\polarized\\'
+meas_num = 20  #number of measurements 
+wait = .1
 
 
 
@@ -53,22 +53,53 @@ for i in range(meas_num):
     ims1[i,:,:] = im1
     ims2[i,:,:] = im2
 
-    r1s[i] = np.mean(im1[100:150,125:175])
+    r1s[i] = np.mean(im1[125:175,100:150])
     r2s[i] = np.mean(im2[100:150,100:150])
+   
+    '''plot slice'''
+    fig, ax1 = plt.subplots()
+
+    color = 'tab:red'
+    ax1.set_ylabel('cam1',color=color)
+    ax1.plot(np.mean(im1[135:165,100:200],0), color=color)
+    ax1.tick_params(axis='y', labelcolor=color)
+
+    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+    color = 'tab:blue'
+    ax2.set_ylabel('cam2', color=color)  # we already handled the x-label with ax1
+    ax2.plot(np.mean(im2[110:140,100:200],0), color=color)
+    ax2.tick_params(axis='y', labelcolor=color)
+
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.show()
     
     print("on measurement "+ str(i))
     print('cam 1 is ' + str(t1s[i]))
     print('cam 2 is ' + str(t2s[i]))
     time.sleep(wait)
     
+    
 camera1.close()
 camera2.close()
 
-plt.plot(t1s,r1s, '.', label = "Cam1")
-plt.plot(t2s,r2s, '.', label = "Cam2")
-plt.xlabel('FPA temp [C]')
-plt.ylabel('avg. response over active area')
-plt.title('scan temp v.s. response ')
+
+'''plot slice'''
+fig, ax1 = plt.subplots()
+
+color = 'tab:red'
+ax1.set_ylabel('cam1', color=color)
+ax1.plot(r1s, color=color)
+ax1.tick_params(axis='y', labelcolor=color)
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+color = 'tab:blue'
+ax2.set_ylabel('cam2', color=color)  # we already handled the x-label with ax1
+ax2.plot(r2s, color=color)
+ax2.tick_params(axis='y', labelcolor=color)
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.show()
 
 #create hdf5 file
