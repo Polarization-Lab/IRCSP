@@ -66,3 +66,18 @@ def create_LUT_df(data_path, name):
         i = i +1
 
     return(result)
+
+
+def get_slice(df,x,y):
+    sli = []
+    for i in range(len(df)):
+        s = df[i]
+        sli.append(s[y,x])
+    return(sli)
+
+def get_slice_avg(df,x):
+    '''returns slice averaged in the spatial dimension'''
+    sli = []
+    for i in range(len(df)):
+        s = df[i]
+        sli.append(np.mean(s[:,x]))
