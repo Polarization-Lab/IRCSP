@@ -18,13 +18,13 @@ import h5py
 
 
 """options for measurement"""
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\march\\polarized\\'
-meas_num = 100  #number of measurements to average over
+save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\may19\\polarized\\'
+meas_num = 10  #number of measurements to average over
 wait = .1 #time between samples 
 
 angle_step = 1;
 angle_start = 0;
-angle_stop = 180;
+angle_stop = 360;
 
 """DO NOT CHANGE"""
 camera1 = Boson(port='COM5')
@@ -41,6 +41,7 @@ motor = apt.Motor(83830282)
 [minv,a, v] = motor.get_velocity_parameters()
 [maxa,maxv] = motor.get_velocity_parameter_limits()
 
+print('homing motor')
 motor.set_velocity_parameters(minv,maxa,maxv)
 motor.move_home(True)
 
@@ -95,7 +96,7 @@ for a in range(angle_start,angle_stop,angle_step):
     
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
     
-    color = 'tab:blue'
+    color = 'tab:blue' 
     ax2.set_ylabel('cam2', color=color)  # we already handled the x-label with ax1
     ax2.plot(np.mean(im2[110:140,100:200],0), color=color)
     ax2.tick_params(axis='y', labelcolor=color)
@@ -103,7 +104,7 @@ for a in range(angle_start,angle_stop,angle_step):
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.show()
         
-    time.sleep(3)
+    time.sleep(5)
     
 camera1.close()
 camera2.close()
