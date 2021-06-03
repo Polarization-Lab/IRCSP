@@ -15,7 +15,7 @@ import winsound
 
 
 """options for measurement"""
-name = "dark1"
+name = "dark2"
 save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\may19\\polarized\\'
 meas_num = 100  #number of measurements 
 wait = .1

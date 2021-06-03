@@ -13,12 +13,12 @@ import time
 import h5py
 
 """options for measurement"""
-name = "hair"
-save_path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\apr122021\\'
+name = "dark"
+save_path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\jun032021\\'
 
 
 #SET UP MOTOR
-motor = apt.Motor(83830282)
+motor = apt.Motor(83830277)
 
 #set velocity parameters to be maximum
 [minv,a, v] = motor.get_velocity_parameters()
