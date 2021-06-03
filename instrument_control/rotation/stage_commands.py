@@ -5,7 +5,12 @@ module of commands which interface with the Thorlabs ELL
 @author: khart
 """
 
-import serial
+#import serial
+
+
+'''for the ELL14 the encoder per pulse value is below'''
+ELL14 = 262144
+enum = ELL14 /360
 
 
 def open_port(com):
