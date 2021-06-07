@@ -6,6 +6,7 @@ Created on Fri Apr 16 11:24:49 2021
 """
 import thorlabs_apt as apt
 from flirpy.camera.boson import Boson
+import rotation.stage_commands as stg
 import matplotlib.pyplot as plt
 import cv2
 import numpy as np
@@ -18,14 +19,9 @@ save_path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\jun032021\\'
 
 
 #SET UP MOTOR
-motor = apt.Motor(83830277)
+ser = stg.open_port('COM9')
+stg.home_motor(ser)
 
-#set velocity parameters to be maximum
-[minv,a, v] = motor.get_velocity_parameters()
-[maxa,maxv] = motor.get_velocity_parameter_limits()
-
-motor.set_velocity_parameters(minv,maxa,maxv)
-motor.move_home(True)
 
 #initialize camera
 camera = Boson(port='COM4')
@@ -43,19 +39,19 @@ def take_image(frames):
 
 #measurement sequence
 I0 = take_image(frames)
-motor.move_by(45)
+stg.move_45(ser)
 time.sleep(wait)
 plt.imshow(I0)
 plt.show()
 
 I45 = take_image(frames)
-motor.move_by(45)
+stg.move_90(ser)
 time.sleep(wait)
 plt.imshow(I45)
 plt.show()
 
 I90 = take_image(frames)
-motor.move_by(45)
+stg.move_135(ser)
 time.sleep(wait)
 plt.imshow(I90)
 plt.show()
