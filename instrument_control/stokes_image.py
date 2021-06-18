@@ -4,18 +4,16 @@ Created on Fri Apr 16 11:24:49 2021
 
 @author: khart
 """
-import thorlabs_apt as apt
 from flirpy.camera.boson import Boson
 import rotation.stage_commands as stg
 import matplotlib.pyplot as plt
-import cv2
 import numpy as np
 import time
 import h5py
 
 """options for measurement"""
-name = "dark"
-save_path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\jun032021\\'
+name = "face5"
+save_path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\jun072021\\'
 
 
 #SET UP MOTOR
@@ -26,7 +24,7 @@ stg.home_motor(ser)
 #initialize camera
 camera = Boson(port='COM4')
 camera.set_ffc_manual()
-wait = 5
+wait = .5
 frames = 100
 
 def take_image(frames):
@@ -61,6 +59,7 @@ plt.imshow(I135)
 plt.show()
 
 camera.close()
+ser.close()
 
 S0 = (I0 + I45 + I90 +I135)/4
 S1 = I0 - I90

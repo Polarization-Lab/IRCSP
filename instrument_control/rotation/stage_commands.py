@@ -5,7 +5,7 @@ module of commands which interface with the Thorlabs ELL
 @author: khart
 """
 
-#import serial
+import serial
 
 
 '''for the ELL14 the encoder per pulse value is below'''
