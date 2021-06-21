@@ -13,10 +13,25 @@ this code has been designed to work based on ELL14
 but can be extrapolated to other ELLx devices by modifying the 
 value for encoder pulses vs. movements
 
+Utilizes functions adapted from Matlab by Atkin Hyatt
+
 @author: kirahart
 """
 import struct
 
+def degree_to_hex(pulsPerDeg, deg):
+    '''
+    pulsPerDeg - number of pulses per degree, 398 + 2/9 for ELL14
+    Deg = angular value of desired degree location
+
+    Returns
+    -------
+    angleCommand.
+
+    '''
+    pulses = round(pulsPerDeg * deg);
+    angleCommand = hex(pulses);
+    return(angleCommand)
 
 def float32_bit_pattern(value):
     return sum(b << 8*i for i,b in enumerate(struct.pack('f', value)))

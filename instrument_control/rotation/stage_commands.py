@@ -5,13 +5,15 @@ module of commands which interface with the Thorlabs ELL
 @author: khart
 """
 
-#import serial
+import serial
+from thorlabs_encoder import degree_to_hex
 
 
 '''for the ELL14 the encoder per pulse value is below'''
 ELL14 = 262144
 enum = ELL14 /360
-
+pulsPerDeg = 398.222222222;
+deviceaddress = 0 ;
 
 def open_port(com):
     ser = serial.Serial(com)  # open serial port
@@ -22,6 +24,20 @@ def open_port(com):
 def home_motor(ser):
     ser.write(b'0ho1')
     print(ser.read())
+    
+def move_motor_absolute(ser,deg):
+    #move motor 
+    angleCommand = degree_to_hex(pulsPerDeg, deg)
+    y = b'0ma' + angleCommand.encode('ascii') ;
+    ser.write(y)
+    
+    #check motor location
+    # = ser.read()
+    #[j, pos ]= ;
+    #pos = strtok(pos);
+    #pos = hex2dec(pos) / pulsPerDeg;
+    #print("\n Actual Position:", pos ," degrees\n");
+  
 
 def move_0(ser):
     ser.write(b'0ma00000000')

@@ -93,8 +93,6 @@ def collapse_df(df):
         images2.append(np.around(im,decimals =0))    
     return(values1,images1,values2,images2)    
 
-
-
 def compile_NUC_matrix_input(df):
     '''
     this function will prepare NUC averaged data for NUC_coef()
@@ -133,8 +131,6 @@ def compile_NUC_matrix_input(df):
             rs = np.concatenate((rs, responses), axis=0)
         
     return(T_ref, tFPAS, rs)       
-
-
 
 def calc_NUC_coef(tFPAS,rs,x,y):
     '''this function calculates the cal. coef for a given pizzel
@@ -309,4 +305,33 @@ def correct_and_collapse_df(df,cal_file1,cal_file2,ROI1,ROI2,waves):
     im1 = np.mean(corrected_images1,axis =0)    
     im2 = np.mean(corrected_images2,axis =0)    
     return(im1,im2)
+
+def save_NUC_coef(M1,M2, tref1, tref2, ROI1, ROI2, save_path, name):
+    
+    """
+    This function dsaves the computed NUC as an .h5
+
+    Parameters
+    ----------
+    save_path : str
+        filepath to thecalibration files
+    name : str
+        name of NUC calibration file
+
+    Returns
+    -------
+    None
+    """
+    #create hdf5 file
+    hf = h5py.File(save_path + name + '.h5', 'w')
+    
+    #drift with FPA temps
+    hf.create_dataset('/M1',     data= M1)
+    hf.create_dataset('/M2',     data= M2)
+    hf.create_dataset('/Tref1',  data= tref1)
+    hf.create_dataset('/Tref2',  data= tref2)
+    #metadata
+    hf.create_dataset('/ROI1',  data= ROI1)
+    hf.create_dataset('/ROI2',  data= ROI2)
+    hf.close()
     
