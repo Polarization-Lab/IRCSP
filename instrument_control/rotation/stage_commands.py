@@ -15,7 +15,7 @@ Utilizes functions adapted from Matlab by Atkin Hyatt
 """
 
 import serial
-from thorlabs_encoder import degree_to_hex2, degree_to_hex8,hex_to_degree
+from   rotation.thorlabs_encoder import degree_to_hex2, degree_to_hex8,hex_to_degree
 import time
 
 
@@ -23,51 +23,57 @@ import time
 '''for the ELL14 the encoder per pulse value is below'''
 ELL14 = 262144
 enum = ELL14 /360
-pulsPerDeg = 398.222222222;
+pulsPerDeg = 398 + 2/9
 deviceaddress = 0 ;
 
 def open_port(com):
-    ser = serial.Serial(com)  # open serial port
+    ser = serial.Serial(com,timeout = 1)  # open serial port
     print(ser.name)         # check which port was really used
     ser.baudrate = 9600
     return ser
 
 def home_motor(ser):
+    #flush buffers
+    ser.flushInput()
+    ser.flushOutput()
     ser.write(b'0ho1')
-    print(ser.read())
+    h = ser.readline()
+    while h[0:3] != b'0PO':
+        h = ser.readline()
     
 def move_motor_absolute(ser,deg):
+    ser.flushInput()
+    ser.flushOutput()
     #move motor 
     angleCommand = degree_to_hex8(pulsPerDeg, deg)
     y = b'0ma' + angleCommand.encode('ascii') ;
-    print(y)
-    ser.write(y)
-<<<<<<< HEAD
-    print(ser.read())
-=======
-    time.sleep(.05)
->>>>>>> f4f15bd83acff9a9701b3cacdfd7cbb8a4615129
-    
+    ser.write(y);
+
     #read motor's actual position
-    ser.write(b'0gp')
-    h = ser.read(y)
-   
-    h = h[3:] #remove '0PO' header
-    h = hex_to_degree(pulsPerDeg,h)  #convert to degree
+    h = ser.readline() 
+    while h[0:3] != b'0PO':
+        h = ser.readline() 
+    h = h[3:11] #remove '0PO' header
+    h = int(h,16)/pulsPerDeg  #convert to degree
     return(h)
     
 def set_jog(ser,jog):
+    #clear buffers
+    ser.flushInput()
+    ser.flushOutput()
     #move motor 
     angleCommand = degree_to_hex8(pulsPerDeg, jog)
     y = b'0sj' + angleCommand.encode('ascii') ;
     ser.write(y)
-    ser.read(y)
+    ser.readline(y)
 
 def set_velocity(ser,velocity):
     #this is broken"
     '''velocity is in % of maximum vekicuty'''
+    ser.flushInput()
+    ser.flushOutput()
     #move motor 
     angleCommand = degree_to_hex2(pulsPerDeg, velocity)
     y = b'0sv' + angleCommand.encode('ascii') ;
     ser.write(y)
-    ser.read(y)
+    print(ser.readline())

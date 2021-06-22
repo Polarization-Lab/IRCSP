@@ -16,11 +16,11 @@ import sys
 
 
 '''USER INPUT'''
-COM_cam = 'COM9'
-COM_motor = 'COM10'
+COM_cam = 'COM4'
+COM_motor = 'COM9'
 pol_angles = [0,45,90,135]
-path = 'filepath'
-name = 'name.h5'
+path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\tests\\'
+name = 'poltest.h5'
 user_notes = 'Data was taken by : Kira'
 
 
@@ -45,7 +45,7 @@ if ffc in ['Y', 'y', 'Yes', 'yes', 'YES']:
     cam.do_ffc()
 
 #Ask user how many images and at what intervals 
-num = int(input('How many images to take? \n'))
+num = int(input('frames per analyzer position? \n'))
 
 #check file path exists
 if os.path.exists(path):
@@ -67,24 +67,28 @@ except:
 na = len(pol_angles)
 
 #preallocate file size
-images = np.zeros((na,num,256,320))
-temps  = np.zeros((na,num))
+images = np.zeros((na,256,320))
+temps  = np.zeros((na))
 actual_angles  = np.zeros(na)
 
 '''---IMAGE AQUISITION LOOP---'''
 
 for j in range(na):
+    print('moving to ', pol_angles[j])
     h = move_motor_absolute(motor, pol_angles[j])
     actual_angles[j]  = h 
-    
+    ims = np.zeros((num,256,320))
     for i in range(num):
-        images[j,i,:,:] = cam.grab(device_id = 1)
-        temps[j,i]      = cam.get_fpa_temperature()
+        ims[i,:,:] = cam.grab(device_id = 1)
+    
+    images[j,:,:] =np.mean(ims,axis = 0)
+    temps[j]      = cam.get_fpa_temperature()
     print('actual angle is ',str(h), ' degree')
 
 '''---DISPLAY RADIOMETRIC IMAGE---'''
-plt.imshow(images[0,0,:,:])
-plt.title("Sample Int. Image")
+plt.imshow(np.mean(images,axis = 0))
+plt.title("Image Average")
+plt.colorbar()
 plt.show()
 
 '''----SAVE AS HDF5 FILE---'''

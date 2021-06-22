@@ -18,7 +18,7 @@ Utilizes functions adapted from Matlab by Atkin Hyatt
 @author: kirahart
 """
 import struct
-from ast import literal_eval
+
 
 def degree_to_hex8(pulsPerDeg, deg):
     '''
