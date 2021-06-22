@@ -2,11 +2,22 @@
 """
 Created on Thu Jun  3 11:14:16 2021
 module of commands which interface with the Thorlabs ELL
+documentation for the thorlabs APT can be found
+https://www.thorlabs.com/software_pages/viewsoftwarepage.cfm?code=ELL
+
+this code has been designed to work based on ELL14 
+but can be extrapolated to other ELLx devices by modifying the 
+value for encoder pulses vs. movements
+
+Utilizes functions adapted from Matlab by Atkin Hyatt
+
 @author: khart
 """
 
 import serial
-from thorlabs_encoder import degree_to_hex
+from thorlabs_encoder import degree_to_hex2, degree_to_hex8,hex_to_degree
+import time
+
 
 
 '''for the ELL14 the encoder per pulse value is below'''
@@ -27,34 +38,36 @@ def home_motor(ser):
     
 def move_motor_absolute(ser,deg):
     #move motor 
-    angleCommand = degree_to_hex(pulsPerDeg, deg)
+    angleCommand = degree_to_hex8(pulsPerDeg, deg)
     y = b'0ma' + angleCommand.encode('ascii') ;
     print(y)
     ser.write(y)
+<<<<<<< HEAD
     print(ser.read())
+=======
+    time.sleep(.05)
+>>>>>>> f4f15bd83acff9a9701b3cacdfd7cbb8a4615129
     
-    #check motor location
-    # = ser.read()
-    #[j, pos ]= ;
-    #pos = strtok(pos);
-    #pos = hex2dec(pos) / pulsPerDeg;
-    #print("\n Actual Position:", pos ," degrees\n");
-  
+    #read motor's actual position
+    ser.write(b'0gp')
+    h = ser.read(y)
+   
+    h = h[3:] #remove '0PO' header
+    h = hex_to_degree(pulsPerDeg,h)  #convert to degree
+    return(h)
+    
+def set_jog(ser,jog):
+    #move motor 
+    angleCommand = degree_to_hex8(pulsPerDeg, jog)
+    y = b'0sj' + angleCommand.encode('ascii') ;
+    ser.write(y)
+    ser.read(y)
 
-def move_0(ser):
-    ser.write(b'0ma00000000')
-    print(ser.read())
-    
-def move_45(ser):
-    ser.write(b'0ma00004600')
-    print(ser.read())
-    
-def move_90(ser):
-    ser.write(b'0ma00008C00')
-    print(ser.read())
-
-def move_135(ser):
-    ser.write(b'0ma0000D200')
-    print(ser.read())
-    
- 
+def set_velocity(ser,velocity):
+    #this is broken"
+    '''velocity is in % of maximum vekicuty'''
+    #move motor 
+    angleCommand = degree_to_hex2(pulsPerDeg, velocity)
+    y = b'0sv' + angleCommand.encode('ascii') ;
+    ser.write(y)
+    ser.read(y)
