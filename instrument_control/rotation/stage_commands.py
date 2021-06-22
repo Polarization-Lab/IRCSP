@@ -29,7 +29,9 @@ def move_motor_absolute(ser,deg):
     #move motor 
     angleCommand = degree_to_hex(pulsPerDeg, deg)
     y = b'0ma' + angleCommand.encode('ascii') ;
+    print(y)
     ser.write(y)
+    print(ser.read())
     
     #check motor location
     # = ser.read()
