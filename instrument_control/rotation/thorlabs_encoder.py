@@ -18,6 +18,7 @@ Utilizes functions adapted from Matlab by Atkin Hyatt
 @author: kirahart
 """
 import struct
+from ast import literal_eval
 
 def degree_to_hex8(pulsPerDeg, deg):
     '''
@@ -116,4 +117,8 @@ def signed_step_to_hex(step,encoder):
     hstr  = hex(value)
     return(hstr[2:])
  
-    
+def hex_to_degree(pulsPerDeg,h):
+    d =int(h,base = 16)/pulsPerDeg
+    return(d)
+    pass
+

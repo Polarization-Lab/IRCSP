@@ -15,7 +15,9 @@ Utilizes functions adapted from Matlab by Atkin Hyatt
 """
 
 import serial
-from thorlabs_encoder import degree_to_hex2, degree_to_hex8
+from thorlabs_encoder import degree_to_hex2, degree_to_hex8,hex_to_degree
+import time
+
 
 
 '''for the ELL14 the encoder per pulse value is below'''
@@ -39,7 +41,15 @@ def move_motor_absolute(ser,deg):
     angleCommand = degree_to_hex8(pulsPerDeg, deg)
     y = b'0ma' + angleCommand.encode('ascii') ;
     ser.write(y)
-    ser.read(y)
+    time.sleep(.05)
+    
+    #read motor's actual position
+    ser.write(b'0gp')
+    h = ser.read(y)
+   
+    h = h[3:] #remove '0PO' header
+    h = hex_to_degree(pulsPerDeg,h)  #convert to degree
+    return(h)
     
 def set_jog(ser,jog):
     #move motor 
