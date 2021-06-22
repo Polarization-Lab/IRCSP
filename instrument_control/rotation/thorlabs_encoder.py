@@ -19,18 +19,32 @@ Utilizes functions adapted from Matlab by Atkin Hyatt
 """
 import struct
 
-def degree_to_hex(pulsPerDeg, deg):
+def degree_to_hex8(pulsPerDeg, deg):
     '''
     pulsPerDeg - number of pulses per degree, 398 + 2/9 for ELL14
     Deg = angular value of desired degree location
 
     Returns
     -------
-    angleCommand.
+    angleCommand (8 bytes).
 
     '''
     pulses = round(pulsPerDeg * deg);
-    angleCommand = hex(pulses);
+    angleCommand = format(pulses,"08X")
+    return(angleCommand)
+
+def degree_to_hex2(pulsPerDeg, deg):
+    '''
+    pulsPerDeg - number of pulses per degree, 398 + 2/9 for ELL14
+    Deg = angular value of desired degree location
+
+    Returns
+    -------
+    angleCommand (2 bytes).
+
+    '''
+    pulses = round(pulsPerDeg * deg);
+    angleCommand = format(pulses,"02X")
     return(angleCommand)
 
 def float32_bit_pattern(value):
