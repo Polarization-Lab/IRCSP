@@ -10,6 +10,7 @@ import h5py
 import pandas as pd
 from math import exp
 from scipy.optimize import curve_fit
+from NUC.NUC_functions import apply_DFC_to_df, pixel_registration
 
 
  
@@ -195,6 +196,53 @@ def build_LUT(waves, A1,A2,B1,B2):
 
 def finv(R,A,B):
     return (R-B)/A
+
+def applyNUC_to_LUT(TEMPS,path,D1,D2,tref1,tref2,M1,M2):
+        #apply pixel registration and NUC to full dataset
+    mean_ims1 =[]; mean_ims2 =[]; std_ims1  =[]; std_ims2  =[]
+    t1s = []; t2s = []
+    
+    for i in TEMPS:
+        #will create a df and print the names of the keys in the original hdf5 file
+        df_i = create_LUT_df(path,str(round(i))+'C.h5')
+        
+        #apply 2 point NUC, this df cooresponds to Cij
+        df = apply_DFC_to_df(df_i,D1,D2,tref1,tref2,M1,M2)
+        
+        corrected_images1= [] ; 
+        corrected_images2= [] ; 
+        
+        for i in range(len(df)):
+            #load image
+            rn = df['imgs1'][i];
+            
+            #apply pixel registration, this returns C lambda, phi
+            T  = df['temps1'][i];
+            t1s.append(T)
+            cn = pixel_registration(rn,cal_file1,waves,ymin1,ymax1)
+            corrected_images1.append(cn)
+      
+    
+        for i in range(len(df)):
+            #load image
+            rn = df['imgs2'][i];
+            
+            #apply pixel registration
+            T  = df['temps2'][i];
+            t2s.append(T)
+            cn = pixel_registration(rn,cal_file2,waves,ymin2,ymax2)
+            corrected_images2.append(cn)
+            
+    
+        mean_ims1.append(np.mean(corrected_images1,axis = 0))
+        mean_ims2.append(np.mean(corrected_images2,axis = 0))
+    
+        std_ims1.append(np.std(corrected_images1,axis = 0))
+        std_ims2.append(np.std(corrected_images2,axis = 0))
+        
+    d = {'BB_temps': TEMPS, 'ims1': list(mean_ims1),'s1': list(std_ims1), 'ims2':list(mean_ims2),'s2': list(std_ims2)}
+    df = pd.DataFrame.from_dict(d, orient='index')
+    df = df.transpose()
 
 def save_LUT(save_path,name,A1,A2,At,B1,B2,Bt,gamma1,gamma2):
     #create hdf5 file
