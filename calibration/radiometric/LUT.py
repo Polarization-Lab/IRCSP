@@ -34,7 +34,7 @@ def determine_reference(path,ref_name):
     Tref1, T2ref
     """
     #first, determine reference temp for each camera
-    df_ref = create_LUT_df(path,'35C.h5')
+    df_ref = create_LUT_df(path,ref_name)
     
     tref1 =  df_ref['temps1'].value_counts().idxmax() #most common FPA temp
     tref2 =  df_ref['temps2'].value_counts().idxmax() #most common FPA temp
