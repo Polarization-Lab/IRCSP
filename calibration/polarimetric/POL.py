@@ -32,11 +32,11 @@ def make_polarized_df(path, ikey, tkey, cal_file, waves, view_angle, ymin, ymax,
         corrected_images1 = []
         for j in range(len(df)):
             # load image
-            rn = df[ikey][i]
+            rn = df[ikey][j]
             rn[rn <= 0] = 0  # threshold
 
             # apply pixel registration, this returns C lambda, phi
-            T = df[tkey][i]
+            T = df[tkey][j]
             t1s.append(T)
             cn = pixel_registration(rn, cal_file, waves, ymin, ymax)
             corrected_images1.append(cn)
