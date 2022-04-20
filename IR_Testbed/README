@@ -1,1 +1,11 @@
 These scripts are utilized to analyze the spectral and polarimetric response of the IR test bed using a FLIR boson. 
+
+single_cam_mono_sweep.py finds the spectral response of the Boson. 
+polarized_scan_singleboson.py uses the boson and a motorized rotating polarizer to find the polarimetric response of the monochromator. 
+The data collected with this code was used to find the DOLP and AOLP of the monochromator as a function of wavelength
+singlebosonchamberscan.py uses the boson and a motorized rotating polarizer to find the polarimetric response of the blackbody calibration target
+The data collected with this code can be used to find the DOLP and AOLP of the Blackbody as a function of temperature
+
+Dark field measurements were taken to account for detector offset. 
+The boson was left to warm to room temperature after setup of experiement before starting experiment to account for FPA temperature drift
+
