@@ -1,0 +1,6 @@
+pandas
+flirpy
+matplotlib
+h5py
+scipy
+astropy
