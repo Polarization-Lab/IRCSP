@@ -19,10 +19,12 @@ import sys
 COM_cam = 'COM4'
 COM_motor = 'COM9'
 pol_angles = [0,45,90,135]
-path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\tests\\'
-name = 'poltest.h5'
-user_notes = 'Data was taken by : Kira'
+path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\Jaclyn\\ARTEMIS_test_samples\\'
 
+
+
+#ask user to input correct COM port
+name = input("Flour_mountangle43") +'.h5'
 
 '''---INITIALIZE CAMERA---'''
 #open camera object and set FFC to manual 
@@ -38,11 +40,11 @@ except:
 
 '''----PROMPT FOR FFC, IMAGE NUMBER---'''
 #Ask user if an initical ffc is requested
-ffc = input('would you like to do an initial ffc? [y,n] \n')
+'''ffc = input('would you like to do an initial ffc? [y,n] \n')
 
 if ffc in ['Y', 'y', 'Yes', 'yes', 'YES']:
     print('Initiating FFC')
-    cam.do_ffc()
+    cam.do_ffc()'''
 
 #Ask user how many images and at what intervals 
 num = int(input('frames per analyzer position? \n'))
@@ -67,11 +69,32 @@ except:
 na = len(pol_angles)
 
 #preallocate file size
+
 images = np.zeros((na,256,320))
+dark = np.zeros((na,256,320))
 temps  = np.zeros((na))
+temps_dark  = np.zeros((na))
 actual_angles  = np.zeros(na)
 
 '''---IMAGE AQUISITION LOOP---'''
+
+#take DFC
+'''input('ready for dfc? [y/n] \n')
+
+
+for j in range(na):
+    print('moving to ', pol_angles[j])
+    h = move_motor_absolute(motor, pol_angles[j])
+    actual_angles[j]  = h 
+    ims = np.zeros((num,256,320))
+    d = np.zeros((num,256,320))
+    for i in range(num):
+        d[i,:,:] = cam.grab(device_id = 1)
+    dark[j,:,:] = np.mean(d,axis = 0)
+    temps_dark[j]      = cam.get_fpa_temperature()'''
+
+
+input('shutter open? [y/n] \n')
 
 for j in range(na):
     print('moving to ', pol_angles[j])
@@ -81,13 +104,22 @@ for j in range(na):
     for i in range(num):
         ims[i,:,:] = cam.grab(device_id = 1)
     
-    images[j,:,:] =np.mean(ims,axis = 0)
+    images[j,:,:] = np.mean(ims,axis = 0)
     temps[j]      = cam.get_fpa_temperature()
     print('actual angle is ',str(h), ' degree')
+    
+    plt.imshow(images[j,:,:] ,cmap = "gray")
+    plt.title(str(h))
+    plt.colorbar()
+    plt.show()
 
 '''---DISPLAY RADIOMETRIC IMAGE---'''
-plt.imshow(np.mean(images,axis = 0))
-plt.title("Image Average")
+im = images 
+s1 =(im[0]-im[2])/(im[0]+im[2])
+s2 =(im[1]-im[3])/(im[1]+im[3])
+
+plt.imshow(np.transpose(np.sqrt(s1**2+s2**2)),cmap = "gray")
+plt.title("DOLP")
 plt.colorbar()
 plt.show()
 
@@ -95,11 +127,12 @@ plt.show()
 #create hdf5 file
 hf = h5py.File(path + name , 'w')
 hf.create_dataset('imgs',   data=images)
+#hf.create_dataset('dark',   data=dark)
+#hf.create_dataset('temps_dark',   data=temps_dark)
 hf.create_dataset('temps',  data=temps)
 hf.create_dataset('set_angels',  data=pol_angles)
 hf.create_dataset('actual_angles', data = actual_angles)
-hf.attrs['user_notes'] = user_notes
-hf.attrs['ffc'] = ffc
+#hf.attrs['ffc'] = ffc
 hf.close()
 
 '''---CLOSE COM PORTS---'''

@@ -16,8 +16,8 @@ import sys
 '''USER INPUT'''
 COM_cam = 'COM4'
 COM_motor = 'COM9'
-path = 'C:\\Users\\khart\\Documents\\IRCAM_data\\tests\\'
-name = 'poltest.h5'
+path =  'C:\\Users\\khart\\Documents\\IRCAM_data\\jul072021\\calibration\\'
+name = 'darkn_long.h5'
 
 '''---INITIALIZE CAMERA---'''
 #open camera object and set FFC to manual 
@@ -52,6 +52,7 @@ for i in range(num):
     images[i,:,:] = cam.grab(device_id = 1)
     temps[i]      = cam.get_fpa_temperature()
     print('on image ',str(i+1), ' of ', str(num))
+    print(temps[i])
     time.sleep(wait)    
 cam.close()
 

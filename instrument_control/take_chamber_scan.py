@@ -15,60 +15,67 @@ import winsound
 
 
 """options for measurement"""
-name = "dark2"
-save_path = 'C:\\Users\\khart\\Documents\\IRCSP2_data\\NUC\\may19\\polarized\\'
-meas_num = 100  #number of measurements 
-wait = .1
+name = "singleimage"
+save_path = 'C:\\Users\\khart\\Documents\\Summer2022Campaign\\IRCSP1\\Calibration\\'
+meas_num = 1  #number of measurements 
+wait = 1
+frames= 1
 
-
-
+#run1 is good, need run 2 and 3 to start around 30C
 
 """DO NOT CHANGE"""
-camera1 = Boson(port='COM5')
+camera1 = Boson(port='COM5') #turn on camera
 camera2 = Boson(port='COM6')
 
 #set FFC to manual
-camera1.set_ffc_manual()
+camera1.set_ffc_manual() # set to manual 
 camera2.set_ffc_manual()
 
-
-t1s  = np.zeros(meas_num);
+t1s  = np.zeros(meas_num); #create empty arrays for variables 
 t2s  = np.zeros(meas_num);
-r1s  = np.zeros(meas_num);
-r2s  = np.zeros(meas_num);
 ims1 = np.zeros((meas_num,256,320))
 ims2 = np.zeros((meas_num,256,320))
+s1 = np.zeros((meas_num,256,320)) #standard deviation per pixel
+s2 = np.zeros((meas_num,256,320))
 
 for i in range(meas_num):
-    # get FPA temperature 
-    t1s[i] = camera1.get_fpa_temperature()
+    # get FPA temperature for each measurement
+    t1s[i] = camera1.get_fpa_temperature() 
     t2s[i] = camera2.get_fpa_temperature()
     
     
-    #take image
-    im1 = camera1.grab(device_id = 1)
-    im2 = camera2.grab(device_id = 2)
+    im1 = np.zeros((frames,256,320))
+    im2 = np.zeros((frames,256,320))
+    
+    
+ #for loop will take x amount of frames 
+#note: frames are different than measurements, # of frames in 1 measurement   
+    for j in range(frames):
+        im1[j] = camera1.grab(device_id = 1)
+        im2[j] = camera2.grab(device_id = 2)
 
+#averaging over the frames and getting standard deviation
+    ims1[i,:,:] = np.mean(im1,axis = 0 )
+    ims2[i,:,:] = np.mean(im2,axis = 0 )
+    
 
-    ims1[i,:,:] = im1
-    ims2[i,:,:] = im2
-
-    r1s[i] = np.mean(im1[125:175,100:150])
-    r2s[i] = np.mean(im2[100:150,100:150])
+    s1[i,:,:] = np.std(im1,axis = 0 )
+    s2[i,:,:] = np.std(im2,axis = 0 )
+    
    
     '''plot slice'''
     fig, ax1 = plt.subplots()
 
     color = 'tab:red'
     ax1.set_ylabel('cam1',color=color)
-    ax1.plot(np.mean(im1[135:165,100:200],0), color=color)
+    ax1.plot(ims1[i][:,10], color=color)
     ax1.tick_params(axis='y', labelcolor=color)
 
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 
     color = 'tab:blue'
     ax2.set_ylabel('cam2', color=color)  # we already handled the x-label with ax1
-    ax2.plot(np.mean(im2[110:140,100:200],0), color=color)
+    ax2.plot(ims2[i][:,10], color=color)
     ax2.tick_params(axis='y', labelcolor=color)
 
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
@@ -89,14 +96,14 @@ fig, ax1 = plt.subplots()
 
 color = 'tab:red'
 ax1.set_ylabel('cam1', color=color)
-ax1.plot(r1s, color=color)
+ax1.plot(t1s,np.mean(ims1,axis = 1), color=color) #plotting average response with temp
 ax1.tick_params(axis='y', labelcolor=color)
 
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 
 color = 'tab:blue'
 ax2.set_ylabel('cam2', color=color)  # we already handled the x-label with ax1
-ax2.plot(r2s, color=color)
+ax2.plot(t2s,np.mean(ims2,axis = 1),  color=color)
 ax2.tick_params(axis='y', labelcolor=color)
 
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
@@ -108,6 +115,8 @@ hf.create_dataset('imgs1', data=ims1)
 hf.create_dataset('imgs2', data=ims2)
 hf.create_dataset('temps1', data=t1s)
 hf.create_dataset('temps2', data=t2s)
+hf.create_dataset('standev1', data=s1)
+hf.create_dataset('standev2',data=s2)
 hf.close()
 
 #beep to signal measurement end
